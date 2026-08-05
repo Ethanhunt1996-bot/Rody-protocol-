@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Rody ✨</title>
+<style>
+:root {
+--bg-color: #0f0f12;
+--card-bg: #1a1a24;
+--text-color: #f0f0f5;
+--accent-color: #ff4b6e;
+--border-color: #2d2d3f;
+--font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.light-mode {
+--bg-color: #f5f5fa;
+--card-bg: #ffffff;
+--text-color: #1a1a24;
+--accent-color: #e63956;
+--border-color: #e0e0e0;
+}
+
+body {
+background-color: var(--bg-color);
+color: var(--text-color);
+font-family: var(--font-main);
+margin: 0;
+padding: 0;
+transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.hidden { display: none !important; }
+
+/* Intro Terminal Screen */
+#intro-screen {
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+padding: 20px;
+text-align: center;
+background-color: #000;
+color: #00ff66;
+font-family: 'Courier New', Courier, monospace;
+}
+
+#typing-text {
+font-size: 1.2rem;
+line-height: 1.8;
+max-width: 650px;
+margin-bottom: 25px;
+white-space: pre-wrap;
+}
+
+.pass-box {
+background: #111;
+padding: 20px;
+border-radius: 12px;
+border: 1px solid #00ff66;
+box-shadow: 0 0 15px rgba(0,255,102,0.2);
+}
+
+.pass-box input {
+padding: 10px;
+font-size: 1rem;
+border: 1px solid #00ff66;
+background: #000;
+color: #00ff66;
+border-radius: 6px;
+outline: none;
+margin-top: 10px;
+text-align: center;
+}
+
+.pass-box button {
+padding: 10px 20px;
+background: #00ff66;
+color: #000;
+font-weight: bold;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+margin-top: 10px;
+}
+
+/* Main Dashboard */
+header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 20px 8%;
+border-bottom: 1px solid var(--border-color);
+}
+
+.container {
+max-width: 1000px;
+margin: 30px auto;
+padding: 0 20px;
+}
+
+.about-box {
+background: var(--card-bg);
+padding: 25px;
+border-radius: 16px;
+border: 1px solid var(--border-color);
+margin-bottom: 30px;
+box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.about-box h2 { color: var(--accent-color); margin-top: 0; }
+
+.grid-3 {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 20px;
+margin-bottom: 30px;
+}
+
+.card {
+background: var(--card-bg);
+padding: 20px;
+border-radius: 14px;
+border: 1px solid var(--border-color);
+}
+
+.card h3 { margin-top: 0; color: var(--accent-color); }
+
+ul { list-style: none; padding: 0; }
+li {
+background: rgba(255,255,255,0.05);
+margin: 8px 0;
+padding: 10px;
+border-radius: 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 0.95rem;
+}
+body.light-mode li { background: rgba(0,0,0,0.05); }
+
+.del-btn {
+background: transparent;
+color: #ff4b4b;
+border: none;
+cursor: pointer;
+font-weight: bold;
+}
+
+.add-btn {
+background: var(--accent-color);
+color: #fff;
+border: none;
+padding: 8px 15px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: bold;
+margin-top: 10px;
+width: 100%;
+}
+
+.theme-toggle {
+background: transparent;
+border: 1px solid var(--border-color);
+color: var(--text-color);
+padding: 8px 16px;
+border-radius: 20px;
+cursor: pointer;
+}
+
+.footer-secret { text-align: center; margin: 50px 0 20px; }
+.secret-btn { background: transparent; border: none; color: #666; cursor: pointer; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- 1. INTRO TERMINAL SCREEN -->
+<div id="intro-screen">
+<div id="typing-text"></div>
+<div id="login-box" class="pass-box hidden">
+<p style="margin: 0; font-size: 0.9rem;">[ Hint: Your favorite superhero ]</p>
+<input type="password" id="password-input" placeholder="Enter Password">
+<br>
+<button onclick="checkPassword()">Unlock World</button>
+</div>
+</div>
+
+<!-- 2. MAIN HUB -->
+<div id="main-content" class="hidden">
+<header>
+<h2 style="margin:0; color: var(--accent-color);">Rody's World ✨</h2>
+<button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Light Mode</button>
+</header>
+
+<div class="container">
+<!-- ABOUT HER -->
+<div class="about-box">
+<h2>About Rody</h2>
+<p>To the beautiful soul who loves potatoes and vanilla ice cream. A sweet girl with a dangerous edge—cross her, and she will plot the perfect revenge. Every second spent with you feels like a moment passing too fast.</p>
+</div>
+
+<!-- OUR PLANS SECTION -->
+<h2 style="color: var(--accent-color);">Our Plans</h2>
+<div class="grid-3">
+<div class="card">
+<h3>Her Plans</h3>
+<ul id="list-her-plans"></ul>
+<button class="add-btn" onclick="addItem('her-plans')">+ Add Plan</button>
+</div>
+<div class="card">
+<h3>My Plans</h3>
+<ul id="list-my-plans"></ul>
+<button class="add-btn" onclick="addItem('my-plans')">+ Add Plan</button>
+</div>
+<div class="card">
+<h3>Our Plans</h3>
+<ul id="list-our-plans"></ul>
+<button class="add-btn" onclick="addItem('our-plans')">+ Add Plan</button>
+</div>
+</div>
+
+<!-- FAVORITE MOMENTS & ACTIVITIES -->
+<div class="grid-3">
+<div class="card">
+<h3>Favorite Moments</h3>
+<ul id="list-moments"></ul>
+<button class="add-btn" onclick="addItem('moments')">+ Add Moment</button>
+</div>
+<div class="card">
+<h3>Activities We Do</h3>
+<ul id="list-activities"></ul>
+<button class="add-btn" onclick="addItem('activities')">+ Add Activity</button>
+</div>
+<div class="card">
+<h3>Inside Jokes & Memes</h3>
+<ul id="list-memes"></ul>
+<button class="add-btn" onclick="addItem('memes')">+ Add Meme</button>
+</div>
+</div>
+
+<!-- EASTER EGG -->
+<div class="footer-secret">
+<button class="secret-btn" onclick="showSecret()">Geheimnis</button>
+</div>
+</div>
+</div>
+
+<script>
+// Typing Effect Configuration (Fixed for innerText)
+const textToType = "Hey Rody...\n\nIt is my pleasure to share your life and your beautiful details.\n\nTime doesn't just fly when I'm with you; it completely stops. Ready to unlock our world?";
+let index = 0;
+
+function typeWriter() {
+if (index < textToType.length) {
+document.getElementById("typing-text").innerText += textToType.charAt(index);
+index++;
+setTimeout(typeWriter, 50);
+} else {
+document.getElementById("login-box").classList.remove("hidden");
+}
+}
+
+// Password Checker
+function checkPassword() {
+const pass = document.getElementById("password-input").value;
+if (pass.toLowerCase().trim() === "firestar") {
+document.getElementById("intro-screen").classList.add("hidden");
+document.getElementById("main-content").classList.remove("hidden");
+loadAllData();
+} else {
+alert("Access Denied! Think about your favorite superhero.");
+}
+}
+
+// Dark/Light Theme Toggle
+function toggleTheme() {
+document.body.classList.toggle("light-mode");
+const btn = document.getElementById("theme-btn");
+btn.innerText = document.body.classList.contains("light-mode") ? "🌙 Dark Mode" : "☀️ Light Mode";
+}
+
+// Persistent LocalStorage Manager
+const keys = ['her-plans', 'my-plans', 'our-plans', 'moments', 'activities', 'memes'];
+
+function addItem(key) {
+const text = prompt("Enter new item:");
+if (text && text.trim() !== "") {
+let items = JSON.parse(localStorage.getItem(key)) || [];
+items.push(text.trim());
+localStorage.setItem(key, JSON.stringify(items));
+renderList(key);
+}
+}
+
+function deleteItem(key, idx) {
+let items = JSON.parse(localStorage.getItem(key)) || [];
+items.splice(idx, 1);
+localStorage.setItem(key, JSON.stringify(items));
+renderList(key);
+}
+
+function renderList(key) {
+const listEl = document.getElementById("list-" + key);
+if(!listEl) return;
+listEl.innerHTML = "";
+let items = JSON.parse(localStorage.getItem(key)) || [];
+items.forEach((item, idx) => {
+const li = document.createElement("li");
+
+const span = document.createElement("span");
+span.textContent = item;
+
+const delBtn = document.createElement("button");
+delBtn.className = "del-btn";
+delBtn.textContent = "✕";
+delBtn.onclick = () => deleteItem(key, idx);
+
+li.appendChild(span);
+li.appendChild(delBtn);
+listEl.appendChild(li);
+});
+}
+
+function loadAllData() {
+keys.forEach(key => renderList(key));
+}
+
+function showSecret() {
+alert("🔒 Secret Message: You are officially the coolest person in this universe.");
+}
+
+window.onload = typeWriter;
+</script>
+</body>
+</html>
