@@ -1,580 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Rody ✨</title>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f0f12;
-            --card-bg: #1a1a24;
-            --text-color: #f0f0f5;
-            --accent-color: #ff4b6e;
-            --border-color: #2d2d3f;
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body.light-mode {
-            --bg-color: #f5f5fa;
-            --card-bg: #ffffff;
-            --text-color: #1a1a24;
-            --accent-color: #e63956;
-            --border-color: #e0e0e0;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-main);
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.4s ease, color 0.4s ease;
-        }
-
-        .hidden { display: none !important; }
-
-        /* Intro Terminal Screen */
-        #intro-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            text-align: center;
-            background-color: #000;
-            color: #00ff66;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        #typing-text {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            max-width: 650px;
-            margin-bottom: 25px;
-            white-space: pre-wrap;
-        }
-
-        .pass-box {
-            background: #111;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #00ff66;
-            box-shadow: 0 0 15px rgba(0,255,102,0.2);
-        }
-
-        .pass-box input {
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #00ff66;
-            background: #000;
-            color: #00ff66;
-            border-radius: 6px;
-            outline: none;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .pass-box button {
-            padding: 10px 20px;
-            background: #00ff66;
-            color: #000;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* Main Dashboard */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 8%;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .about-box {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .about-box h2 { color: var(--accent-color); margin-top: 0; }
-
-        .counter-box {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .counter-box h1 {
-            font-size: 2.5rem;
-            margin: 0 0 10px 0;
-            color: var(--text-color);
-        }
-
-        .counter-box p {
-            margin: 0;
-            color: var(--accent-color);
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-        }
-
-        .card h3 { margin-top: 0; color: var(--accent-color); }
-
-        ul { list-style: none; padding: 0; }
-        li {
-            background: rgba(255,255,255,0.05);
-            margin: 8px 0;
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.95rem;
-            word-break: break-word;
-        }
-        body.light-mode li { background: rgba(0,0,0,0.05); }
-
-        /* Styles for new Checklist feature */
-        .plan-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-grow: 1;
-        }
-
-        .plan-item input[type="checkbox"] {
-            transform: scale(1.2);
-            cursor: pointer;
-            accent-color: var(--accent-color);
-        }
-
-        .plan-text.done {
-            text-decoration: line-through;
-            opacity: 0.5;
-        }
-
-        .del-btn {
-            background: transparent;
-            color: #ff4b4b;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-
-        .add-btn {
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .theme-toggle {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        /* Memory Wall Styles */
-        .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .memory-item {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 1;
-        }
-
-        .memory-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .memory-item .del-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.7);
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
-
-        .footer-secret { text-align: center; margin: 50px 0 20px; }
-        .secret-btn { background: transparent; border: none; color: #666; cursor: pointer; font-size: 0.85rem; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>For Rody ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<style>
+:root{--bg:#1a1322;--card:#251b30;--ink:#f4e8e1;--mute:#b8a5b5;--accent:#f2a090;--gold:#e9bf78;--line:#3a2c47;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Nunito','Segoe UI',Tahoma,sans-serif}
+body.light{--bg:#fbeee6;--card:#fff9f4;--ink:#3b2a3f;--mute:#8a7283;--accent:#d4607a;--gold:#b9812c;--line:#f0d9cf}
+body.star{--bg:#150b28;--card:#21103d;--ink:#f6eaff;--mute:#c7a8ee;--accent:#ff6ad5;--gold:#5eff9b;--line:#3d2272}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;transition:background .5s,color .5s}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;z-index:0;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff8,transparent),radial-gradient(1px 1px at 78% 12%,#fff9,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#fff7,transparent),radial-gradient(1px 1px at 90% 60%,#fff8,transparent),radial-gradient(1px 1px at 22% 88%,#fff7,transparent),radial-gradient(1.5px 1.5px at 62% 38%,#fff6,transparent);animation:tw 6s ease-in-out infinite alternate}
+body.light::before{opacity:0}
+@keyframes tw{to{opacity:.2}}
+.hidden{display:none!important}
+#intro{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center;background:#0d0a12;color:#9dffc0;font-family:'Courier New',monospace}
+#typing{font-size:1.1rem;line-height:1.9;max-width:620px;white-space:pre-wrap;margin-bottom:24px}
+.pass{background:#15101c;padding:20px;border-radius:18px;border:1px solid #9dffc0;box-shadow:0 0 22px #9dffc033}
+.pass input{padding:10px;font:inherit;border:1px solid #9dffc0;background:#000;color:#9dffc0;border-radius:10px;text-align:center;margin-top:10px;outline:none}
+.pass button{padding:10px 20px;margin-top:10px;background:#9dffc0;color:#000;font-weight:700;border:0;border-radius:10px;cursor:pointer}
+main{position:relative;z-index:1}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:18px 6%;flex-wrap:wrap}
+header h2{margin:0;font:italic 500 1.7rem var(--serif);color:var(--accent)}
+.tools button{background:transparent;border:1px solid var(--line);color:var(--ink);padding:7px 14px;border-radius:99px;cursor:pointer;margin-left:6px;font:inherit;font-size:.85rem}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 60px}
+h2.sec{font:italic 500 2rem var(--serif);color:var(--accent);margin:48px 0 14px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:24px;margin-bottom:18px}
+.box h3{margin:0 0 10px;font:700 1.35rem var(--serif);color:var(--gold)}
+.hero{text-align:center;padding:44px 20px;border-radius:40px 40px 26px 26px;background:linear-gradient(180deg,#f2a09022,#e9bf7814 60%,transparent)}
+.big{font:700 clamp(4rem,22vw,7.5rem)/1 var(--serif);background:linear-gradient(180deg,#ffd9a0,#f2848f 70%,#a86cc1);-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0}
+.mute{color:var(--mute)}
+#cd{font:600 1.3rem var(--sans);letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card h3{margin:0 0 8px;font:700 1.25rem var(--serif);color:var(--gold)}
+ul{list-style:none;padding:0;margin:0}
+li{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#ffffff0d;margin:7px 0;padding:9px 12px;border-radius:12px;font-size:.95rem;word-break:break-word}
+body.light li{background:#3b2a3f0d}
+.pi{display:flex;align-items:center;gap:9px;flex:1}
+.pi input{accent-color:var(--accent);transform:scale(1.2)}
+.done{text-decoration:line-through;opacity:.5}
+.del{background:none;border:0;color:var(--mute);cursor:pointer;font-size:1rem}
+.add{width:100%;margin-top:8px;padding:9px;border:1px dashed var(--accent);background:transparent;color:var(--accent);border-radius:12px;cursor:pointer;font:600 .9rem var(--sans)}
+.add:hover{background:#ffffff10}
+.reasons{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px}
+.rs{aspect-ratio:1;border-radius:20px 20px 20px 6px;border:1px solid var(--line);background:var(--card);color:var(--gold);font:700 2.2rem var(--serif);cursor:pointer;padding:8px;display:flex;align-items:center;justify-content:center;text-align:center;transition:transform .3s}
+.rs.open{font:600 .85rem var(--sans);color:var(--ink);background:linear-gradient(160deg,#f2a09026,var(--card));transform:rotate(-1.5deg)}
+.song,.ow{width:100%;text-align:start;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:16px;padding:14px 16px;margin:8px 0;cursor:pointer;font:inherit}
+.song b,.ow b{font:700 1.15rem var(--serif);color:var(--accent)}
+.song p,.ow p{margin:8px 0 0;color:var(--mute)}
+.letter{background:#fff7ee;color:#3b2a3f;border-radius:6px 22px 22px 22px;padding:28px 24px;font:500 1.25rem/1.9 var(--serif);white-space:pre-wrap;box-shadow:0 14px 40px #0006}
+.wish{display:block;margin:6px auto;padding:14px 28px;border:0;border-radius:99px;background:linear-gradient(90deg,#f2848f,#e9bf78);color:#2a1630;font:700 1.05rem var(--sans);cursor:pointer}
+#wish-msg{text-align:center;margin-top:12px;min-height:1.6em}
+.mem{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin:14px 0}
+.mi{position:relative;aspect-ratio:1;border-radius:16px;overflow:hidden;background:#0003;cursor:pointer}
+.mi img,.mi video{width:100%;height:100%;object-fit:cover}
+.mi .del{position:absolute;top:5px;right:5px;background:#000a;color:#fff;border-radius:50%;width:24px;height:24px;padding:0}
+#lb{position:fixed;inset:0;background:#000d;z-index:9;display:flex;align-items:center;justify-content:center;padding:16px}
+#lb img,#lb video{max-width:100%;max-height:92vh;border-radius:14px}
+.sp{position:fixed;bottom:-20px;z-index:8;pointer-events:none;animation:up 3s ease-out forwards;color:var(--gold)}
+@keyframes up{to{transform:translateY(-110vh) rotate(200deg);opacity:0}}
+.secret{text-align:center;margin-top:40px}
+.secret button{background:none;border:0;color:var(--mute);cursor:pointer}
+@media(prefers-reduced-motion:reduce){body::before,.sp{animation:none}}
+</style>
 </head>
 <body>
 
-    <!-- 1. INTRO TERMINAL SCREEN -->
-    <div id="intro-screen">
-        <div id="typing-text"></div>
-        <div id="login-box" class="pass-box hidden">
-            <p style="margin: 0; font-size: 0.9rem;">[ Hint: Your favorite superhero ]</p>
-            <input type="password" id="password-input" placeholder="Enter Password">
-            <br>
-            <button onclick="checkPassword()">Unlock World</button>
-        </div>
-    </div>
+<div id="intro">
+  <div id="typing"></div>
+  <div id="login" class="pass hidden">
+    <p style="margin:0;font-size:.9rem">[ Hint: Your favorite superhero ]</p>
+    <input type="password" id="pw" placeholder="Enter Password" autocomplete="off">
+    <br><button onclick="checkPassword()">Unlock World</button>
+  </div>
+</div>
 
-    <!-- 2. MAIN HUB -->
-    <div id="main-content" class="hidden">
-        <header>
-            <h2 style="margin:0; color: var(--accent-color);">Rody's World ✨</h2>
-            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Light Mode</button>
-        </header>
+<main id="main" class="hidden">
+<header>
+  <h2>Rody's World ✨</h2>
+  <div class="tools">
+    <button onclick="ice()" title="🍦">🍦</button>
+    <button onclick="starMode()" id="star-btn">✦ Starfire</button>
+    <button onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
+  </div>
+</header>
 
-        <div class="container">
+<div class="wrap">
+  <div class="hero">
+    <div class="mute">something is waiting for you</div>
+    <div class="big">11.11</div>
+    <div id="cd"></div>
+    <div class="mute" id="days" style="margin-top:14px"></div>
+  </div>
 
-            <!-- ABOUT HER & DAYS COUNTER -->
-            <div class="about-box">
-                <h2>About Rody</h2>
-                <p>To the beautiful soul who loves potatoes and vanilla ice cream. A sweet girl with a dangerous edge—cross her, and she will plot the perfect revenge. Every second spent with you feels like a moment passing too fast.</p>
-            </div>
+  <div class="box" style="margin-top:18px">
+    <h3>About Rody</h3>
+    <p dir="auto">To the beautiful soul who loves potatoes and vanilla ice cream. A sweet girl with a dangerous edge—cross her, and she will plot the perfect revenge. Every second spent with you feels like a moment passing too fast.</p>
+  </div>
 
-            <!-- DAYS COUNTER (NEW) -->
-            <div class="about-box counter-box">
-                <h1 id="days-count">0 Days</h1>
-                <p>Since July 14, 2026 💖</p>
-            </div>
+  <!-- BIRTHDAY (unlocks 11 Nov at 00:00) -->
+  <section id="bday" class="hidden">
+    <h2 class="sec">Happy birthday, Rody 🎂</h2>
+    <div class="box"><h3>11 reasons</h3><p class="mute" style="margin-top:0">Tap each one.</p><div id="reasons" class="reasons"></div></div>
+    <div class="box" style="text-align:center"><h3>Make a wish</h3>
+      <p class="mute" style="margin-top:0">Wishes work best at 11:11 on 11.11.</p>
+      <button class="wish" onclick="wish()">Make a wish ✨</button><div id="wish-msg"></div></div>
+    <h2 class="sec">Songs that remind me of you 🎵</h2><div id="songs"></div>
+    <h2 class="sec">Open when…</h2><div id="ow"></div>
+    <h2 class="sec">A letter for you</h2><div id="letter" class="letter" dir="auto"></div>
+  </section>
 
-            <!-- OUR PLANS SECTION (NOW WITH CHECKBOXES) -->
-            <h2 style="color: var(--accent-color);">Our Plans</h2>
-            <div class="grid-3">
-                <div class="card">
-                    <h3>Her Plans</h3>
-                    <ul id="list-her-plans"></ul>
-                    <button class="add-btn" onclick="addPlan('her-plans')">+ Add Plan</button>
-                </div>
-                <div class="card">
-                    <h3>My Plans</h3>
-                    <ul id="list-my-plans"></ul>
-                    <button class="add-btn" onclick="addPlan('my-plans')">+ Add Plan</button>
-                </div>
-                <div class="card">
-                    <h3>Our Plans</h3>
-                    <ul id="list-our-plans"></ul>
-                    <button class="add-btn" onclick="addPlan('our-plans')">+ Add Plan</button>
-                </div>
-            </div>
+  <h2 class="sec">Our Plans</h2>
+  <div class="grid">
+    <div class="card"><h3>Her Plans</h3><ul id="l-her-plans"></ul><button class="add" onclick="addItem('her-plans',1)">+ Add Plan</button></div>
+    <div class="card"><h3>My Plans</h3><ul id="l-my-plans"></ul><button class="add" onclick="addItem('my-plans',1)">+ Add Plan</button></div>
+    <div class="card"><h3>Our Plans</h3><ul id="l-our-plans"></ul><button class="add" onclick="addItem('our-plans',1)">+ Add Plan</button></div>
+  </div>
 
-            <!-- FAVORITE MOMENTS, MUSIC & ACTIVITIES -->
-            <h2 style="color: var(--accent-color); margin-top: 40px;">Moments & Activities</h2>
-            <div class="grid-3">
-                <div class="card">
-                    <h3>Favorite Music 🎵</h3>
-                    <ul id="list-favourite-music"></ul>
-                    <button class="add-btn" onclick="addTextItem('favourite-music')">+ Add Track / Artist</button>
-                </div>
-                <div class="card">
-                    <h3>Favorite Moments</h3>
-                    <ul id="list-moments"></ul>
-                    <button class="add-btn" onclick="addTextItem('moments')">+ Add Moment</button>
-                </div>
-                <div class="card">
-                    <h3>Activities We Do</h3>
-                    <ul id="list-activities"></ul>
-                    <button class="add-btn" onclick="addTextItem('activities')">+ Add Activity</button>
-                </div>
-            </div>
+  <h2 class="sec">Movie night 🎬</h2>
+  <div class="box"><ul id="l-movies"></ul><button class="add" onclick="addItem('movies',1)">+ Add a movie</button></div>
 
-            <!-- JOKES & NOTES (NEW NOTES SECTION) -->
-            <div class="grid-3">
-                <div class="card">
-                    <h3>Inside Jokes & Memes 😂</h3>
-                    <ul id="list-memes"></ul>
-                    <button class="add-btn" onclick="addTextItem('memes')">+ Add Meme</button>
-                </div>
-                <div class="card">
-                    <h3>Notes & Thoughts 📝</h3>
-                    <ul id="list-notes"></ul>
-                    <button class="add-btn" onclick="addTextItem('notes')">+ Add Note</button>
-                </div>
-            </div>
+  <h2 class="sec">Moments &amp; Activities</h2>
+  <div class="grid">
+    <div class="card"><h3>Favorite Music 🎵</h3><ul id="l-favourite-music"></ul><button class="add" onclick="addItem('favourite-music')">+ Add Track / Artist</button></div>
+    <div class="card"><h3>Favorite Moments</h3><ul id="l-moments"></ul><button class="add" onclick="addItem('moments')">+ Add Moment</button></div>
+    <div class="card"><h3>Activities We Do</h3><ul id="l-activities"></ul><button class="add" onclick="addItem('activities')">+ Add Activity</button></div>
+    <div class="card"><h3>Inside Jokes &amp; Memes 😂</h3><ul id="l-memes"></ul><button class="add" onclick="addItem('memes')">+ Add Meme</button></div>
+    <div class="card"><h3>Notes &amp; Thoughts 📝</h3><ul id="l-notes"></ul><button class="add" onclick="addItem('notes')">+ Add Note</button></div>
+  </div>
 
-            <!-- MEMORY WALL (NEW) -->
-            <h2 style="color: var(--accent-color); margin-top: 40px;">Memory Wall 📸</h2>
-            <div class="about-box">
-                <div id="memory-wall-grid" class="memory-grid"></div>
-                <button class="add-btn" style="max-width: 300px; margin-top: 20px;" onclick="addMemory()">+ Add Image URL</button>
-            </div>
+  <h2 class="sec">Memory Wall 📸</h2>
+  <div class="box">
+    <div id="mem" class="mem"></div>
+    <input type="file" id="file" accept="image/*,video/*" multiple class="hidden" onchange="upload(this.files);this.value=''">
+    <button class="add" onclick="$('file').click()">+ Add photos / videos from gallery</button>
+    <div id="up" class="mute" style="margin-top:8px"></div>
+  </div>
 
-            <!-- EASTER EGG -->
-            <div class="footer-secret">
-                <button class="secret-btn" onclick="showSecret()">Geheimnis</button>
-            </div>
-        </div>
-    </div>
+  <div class="secret"><button onclick="alert('🔒 You are officially the coolest person in this universe.')">Geheimnis</button></div>
+</div>
+</main>
+<div id="lb" class="hidden" onclick="this.classList.add('hidden');this.innerHTML=''"></div>
 
-    <script>
-        // FIREBASE CONFIGURATION (البيانات الحقيقية المدمجة)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB6snhRvUF8WFxhidaTLXFD2Chz-g4xvWk",
-            authDomain: "rody-world.firebaseapp.com",
-            databaseURL: "https://rody-world-default-rtdb.firebaseio.com",
-            projectId: "rody-world",
-            storageBucket: "rody-world.firebasestorage.app",
-            messagingSenderId: "152266457006",
-            appId: "1:152266457006:web:824a638abaa2fb74fd123f",
-            measurementId: "G-BSMHNBG1QR"
-        };
+<script>
+/* ===== EDIT YOUR CONTENT HERE ===== */
+const REASONS = [
+  "Your honesty. You say what's real, and that's rare.",
+  "You're genuinely funny. Your sense of humor makes every conversation easier.",
+  "Your energy. It's warm, it's good, and it's contagious.",
+  "You tell me when something bothers you, right away. I never have to guess with you.",
+  "Your laugh. Making you laugh is one of my favorite things.",
+  "You share your life and your stories with me. That trust means a lot, and I don't take it lightly.",
+  "You're sweet with a dangerous edge. Cross you and the perfect revenge begins.",
+  "You find happiness in simple things, like potatoes and vanilla ice cream.",
+  "You speak up for yourself and say how you feel.",
+  "Time moves faster when I talk to you. That's how good it feels.",
+  "Because you're you, and the world is better with you in it."
+];
+const SONGS = [
+  {t:'Heartbeat', n:"The first time I heard it, I pictured a long open road, the windows down, and a future that sounds exactly like this song. It's a song for freedom, and I hope you get all of it."},
+  {t:'Heavenly', n:"When I listen to this one, I just feel calm and warm. It sounds like the comfort I wish I could hand you after a hard day."},
+  {t:'Moth to a Flame', n:"This one feels like being there for someone. If you ever cry, you don't have to carry it alone. I'll listen, and I won't judge."}
+];
+const OPEN_WHEN = [
+  {l:'you feel down', n:"You're allowed to have a bad day. You've always been honest about how you feel, and that takes strength. Take a breath, drink something warm, and remember how many people are lucky to know you. This will pass, and I'm proud of you for getting through it."},
+  {l:'you need a laugh', n:"Think about the last time you plotted a perfect revenge. Now think about how dramatic the plan was. Now think about vanilla ice cream. You're welcome. ✨"},
+  {l:'you doubt yourself', n:"Here's what I know about you: you're honest, you're funny, you're brave enough to say what you feel, and you share your world with people. Those aren't small things. Keep going. You're doing better than you think."},
+  {l:'you miss me', n:"Distance is just part of life right now, and it doesn't change that I think of you. Take care of yourself and your people first. Put on one of your favorite songs and know that I wish you well."},
+  {l:'you succeed', n:"Look at you! I knew you could do it. Celebrate properly: ice cream is mandatory. I'm genuinely proud of you, Rody."},
+  {l:"you can't sleep", n:"Put on Heavenly, lower the lights, and let your mind slow down. Tomorrow doesn't need to be solved tonight. Rest well, Rody."},
+  {l:'you are angry', n:"Okay. Deep breath. Whoever it is, you're allowed to be angry. Write the revenge plan down if you need to, then sleep on it. The best revenge is usually being happy and thriving."},
+  {l:'it is your next birthday', n:"Another year older! I hope this year gave you good things and that you're closer to the career and the peace you wanted. Whatever this year looked like, I'm proud of who you're becoming. Happy birthday, Rody.", u:'2027-11-11T00:00:00'}
+];
+const LETTER = `Dear Rody,
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+Happy birthday.
 
-        // -------------------------
-        // 1. INTRO & THEME LOGIC
-        // -------------------------
-        const textToType = "Hey Rody...\n\nIt is my pleasure to share your life and your beautiful details.\n\nTime doesn't just fly when I'm with you; it completely stops. Ready to unlock our world?";
-        let index = 0;
+From the first conversation, what stayed with me was how real you are. You say what you think, you're funny without trying, and your energy makes things feel lighter. That's not easy to find.
 
-        function typeWriter() {
-            if (index < textToType.length) {
-                document.getElementById("typing-text").innerText += textToType.charAt(index);
-                index++;
-                setTimeout(typeWriter, 50);
-            } else {
-                document.getElementById("login-box").classList.remove("hidden");
-            }
-        }
+I'm grateful you tell me when something is bothering you, and that you share your life, your stories, and your days with me. It means a lot, and I don't take it lightly.
 
-        function checkPassword() {
-            const pass = document.getElementById("password-input").value;
-            if (pass.toLowerCase().trim() === "firestar") {
-                document.getElementById("intro-screen").classList.add("hidden");
-                document.getElementById("main-content").classList.remove("hidden");
-                initRealtimeSync();
-                calculateDays();
-            } else {
-                alert("Access Denied! Think about your favorite superhero.");
-            }
-        }
+I love making you laugh. Your laugh is one of the best things in my day.
 
-        function toggleTheme() {
-            document.body.classList.toggle("light-mode");
-            const btn = document.getElementById("theme-btn");
-            btn.innerText = document.body.classList.contains("light-mode") ? "🌙 Dark Mode" : "☀️ Light Mode";
-        }
+I hope this year is gentle with you. I hope you're happy, that you start building the career you want, and that you live in peace. You deserve all of it, and you'll work for it too.
 
-        // -------------------------
-        // 2. NEW: DAYS COUNTER LOGIC
-        // -------------------------
-        function calculateDays() {
-            const startDate = new Date("2026-07-14T00:00:00");
-            const today = new Date();
-            const diffTime = Math.abs(today - startDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            document.getElementById("days-count").innerText = diffDays + " Days";
-        }
+Take care of yourself, keep your honesty, keep your edge, and keep eating ice cream.
 
-        // -------------------------
-        // 3. FIREBASE LOGIC
-        // -------------------------
-        const planKeys = ['her-plans', 'my-plans', 'our-plans'];
-        const textKeys = ['favourite-music', 'moments', 'activities', 'memes', 'notes'];
+Happy birthday, Rody. ✨`;
+const WISH_NOTE = "Wish received: may you be happy, start the career you want, and live in peace. Happy birthday, Rody ✨";
+const BDAY = new Date(2026, 10, 11, 0, 0, 0);   // 11 Nov 2026, 00:00 (device time)
+const START = new Date('2026-07-14T00:00:00');
+const HASH = '907488e8fe0306f3d73f8de6de7c28284c8770269fce2a1f54cedba72b61047d'; // sha256("starfire")
+const PREVIEW = location.hash === '#preview';   // open site.com/#preview to test the birthday section
+/* =================================== */
 
-        function deleteItem(key, childKey) {
-            db.ref('rody_world/' + key).child(childKey).remove();
-        }
+firebase.initializeApp({
+  apiKey:"AIzaSyB6snhRvUF8WFxhidaTLXFD2Chz-g4xvWk",authDomain:"rody-world.firebaseapp.com",
+  databaseURL:"https://rody-world-default-rtdb.firebaseio.com",projectId:"rody-world",
+  storageBucket:"rody-world.firebasestorage.app",messagingSenderId:"152266457006",
+  appId:"1:152266457006:web:824a638abaa2fb74fd123f",measurementId:"G-BSMHNBG1QR"});
+const db = firebase.database();
+const $ = id => document.getElementById(id);
+const el = (t,c,x) => {const e=document.createElement(t); if(c)e.className=c; if(x!=null){e.textContent=x;e.dir='auto'} return e};
 
-        // A. Text Items (Music, Moments, Memes, Notes)
-        function addTextItem(key) {
-            const text = prompt("Enter new item:");
-            if (text && text.trim() !== "") {
-                db.ref('rody_world/' + key).push(text.trim());
-            }
-        }
+/* ---- intro ---- */
+const INTRO = "> booting rody-protocol ........ [ OK ]\n> loading memories ............. [ OK ]\n\nHey Rody...\n\nIt is my pleasure to share your life and your beautiful details.\n\nTime doesn't just fly when I'm with you; it completely stops. Ready to unlock our world?";
+let ix = 0;
+(function type(){ if(ix<INTRO.length){$('typing').textContent+=INTRO[ix++];setTimeout(type,35)} else $('login').classList.remove('hidden') })();
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')checkPassword()});
 
-        function listenToTextKey(key) {
-            db.ref('rody_world/' + key).on('value', (snapshot) => {
-                const listEl = document.getElementById("list-" + key);
-                if (!listEl) return;
-                listEl.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach((childKey) => {
-                        const itemText = data[childKey];
-                        const li = document.createElement("li");
-                        
-                        const span = document.createElement("span");
-                        span.textContent = itemText;
-                        
-                        const delBtn = document.createElement("button");
-                        delBtn.className = "del-btn";
-                        delBtn.textContent = "✕";
-                        delBtn.onclick = () => deleteItem(key, childKey);
-                        
-                        li.appendChild(span);
-                        li.appendChild(delBtn);
-                        listEl.appendChild(li);
-                    });
-                }
-            });
-        }
+async function checkPassword(){
+  const v=$('pw').value.toLowerCase().trim();
+  const b=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));
+  const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+  if(h===HASH){ $('intro').classList.add('hidden'); $('main').classList.remove('hidden'); start(); }
+  else alert('Access Denied! Think about your favorite superhero.');
+}
 
-        // B. Plan Items (With Checkboxes & Backward Compatibility)
-        function addPlan(key) {
-            const text = prompt("Enter new plan:");
-            if (text && text.trim() !== "") {
-                // Now saving as an object to support checkboxes
-                db.ref('rody_world/' + key).push({ text: text.trim(), done: false });
-            }
-        }
+/* ---- themes ---- */
+function toggleTheme(){ document.body.classList.remove('star'); document.body.classList.toggle('light'); $('theme-btn').textContent=document.body.classList.contains('light')?'🌙 Dark':'☀️ Light' }
+function starMode(){ document.body.classList.remove('light'); document.body.classList.toggle('star'); $('theme-btn').textContent='☀️ Light'; if(document.body.classList.contains('star'))sparkle() }
+function ice(){ alert('🍦 Vanilla. Always vanilla.') }
+function sparkle(){ for(let i=0;i<22;i++){const s=el('span','sp','✦');s.style.left=Math.random()*100+'vw';s.style.fontSize=(10+Math.random()*18)+'px';s.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),4000)} }
 
-        function togglePlanStatus(key, childKey, currentData) {
-            if (typeof currentData === 'string') {
-                // Upgrade old string data to new object format
-                db.ref('rody_world/' + key + '/' + childKey).set({ text: currentData, done: true });
-            } else {
-                // Toggle current boolean
-                db.ref('rody_world/' + key + '/' + childKey).update({ done: !currentData.done });
-            }
-        }
+/* ---- birthday ---- */
+function start(){
+  $('days').textContent = 'Together since July 14, 2026 · '+Math.max(0,Math.floor((new Date()-START)/864e5))+' days 💖';
+  buildBday(); tick(); initSync();
+}
+function tick(){
+  const d=BDAY-new Date();
+  if(d<=0||PREVIEW){ $('cd').textContent=d<=0?'Happy birthday ✨':'(preview mode)'; $('bday').classList.remove('hidden'); if(d<=0)return; }
+  else { const D=Math.floor(d/864e5),H=Math.floor(d%864e5/36e5),M=Math.floor(d%36e5/6e4),S=Math.floor(d%6e4/1e3); $('cd').textContent=`${D}d ${H}h ${M}m ${S}s`; }
+  setTimeout(tick,1000);
+}
+function buildBday(){
+  REASONS.forEach((r,i)=>{const b=el('button','rs',String(i+1));b.onclick=()=>{const o=b.classList.toggle('open');b.textContent=o?r:String(i+1);b.dir='auto'};$('reasons').appendChild(b)});
+  SONGS.forEach(s=>{const b=el('button','song');b.appendChild(el('b',0,'🎵 '+s.t));const p=el('p',0,s.n);p.classList.add('hidden');b.appendChild(p);b.onclick=()=>p.classList.toggle('hidden');$('songs').appendChild(b)});
+  OPEN_WHEN.forEach(o=>{const locked=o.u&&!PREVIEW&&new Date()<new Date(o.u);const b=el('button','ow');b.appendChild(el('b',0,(locked?'🔒 ':'💌 ')+'Open when '+o.l));const p=el('p',0,locked?'Opens on '+new Date(o.u).toDateString():o.n);p.classList.add('hidden');b.appendChild(p);b.onclick=()=>p.classList.toggle('hidden');$('ow').appendChild(b)});
+  $('letter').textContent=LETTER;
+}
+function wish(){
+  const n=new Date(), ok=PREVIEW||n>=new Date(2026,10,12)||(n.getMonth()===10&&n.getDate()===11&&n.getHours()%12===11&&n.getMinutes()===11);
+  $('wish-msg').dir='auto';
+  if(!ok){$('wish-msg').textContent='Not yet — come back at 11:11 on 11.11 ✨';return}
+  $('wish-msg').textContent=WISH_NOTE; sparkle();
+}
 
-        function listenToPlanKey(key) {
-            db.ref('rody_world/' + key).on('value', (snapshot) => {
-                const listEl = document.getElementById("list-" + key);
-                if (!listEl) return;
-                listEl.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach((childKey) => {
-                        const itemData = data[childKey];
-                        
-                        // Handle backward compatibility (old strings vs new objects)
-                        const isString = typeof itemData === 'string';
-                        const text = isString ? itemData : itemData.text;
-                        const isDone = isString ? false : !!itemData.done;
+/* ---- lists (Firebase, same paths as before) ---- */
+function addItem(key,check){
+  const t=prompt('Enter new item:'); if(!t||!t.trim())return;
+  db.ref('rody_world/'+key).push(check?{text:t.trim(),done:false}:t.trim());
+}
+function listen(key,check){
+  db.ref('rody_world/'+key).on('value',snap=>{
+    const ul=$('l-'+key); if(!ul)return; ul.innerHTML=''; const data=snap.val()||{};
+    Object.keys(data).forEach(k=>{
+      const v=data[k], str=typeof v==='string', text=str?v:v.text, done=!str&&!!v.done;
+      const li=document.createElement('li'), pi=el('div','pi');
+      if(check){const c=document.createElement('input');c.type='checkbox';c.checked=done;
+        c.onchange=()=>str?db.ref('rody_world/'+key+'/'+k).set({text:v,done:true}):db.ref('rody_world/'+key+'/'+k).update({done:!v.done});pi.appendChild(c)}
+      pi.appendChild(el('span',done?'done':'',text));
+      const d=el('button','del','✕');d.onclick=()=>db.ref('rody_world/'+key).child(k).remove();
+      li.appendChild(pi);li.appendChild(d);ul.appendChild(li);
+    });
+  });
+}
 
-                        const li = document.createElement("li");
-                        
-                        const planContainer = document.createElement("div");
-                        planContainer.className = "plan-item";
-
-                        const checkbox = document.createElement("input");
-                        checkbox.type = "checkbox";
-                        checkbox.checked = isDone;
-                        checkbox.onchange = () => togglePlanStatus(key, childKey, itemData);
-
-                        const span = document.createElement("span");
-                        span.className = "plan-text" + (isDone ? " done" : "");
-                        span.textContent = text;
-                        
-                        planContainer.appendChild(checkbox);
-                        planContainer.appendChild(span);
-
-                        const delBtn = document.createElement("button");
-                        delBtn.className = "del-btn";
-                        delBtn.textContent = "✕";
-                        delBtn.onclick = () => deleteItem(key, childKey);
-                        
-                        li.appendChild(planContainer);
-                        li.appendChild(delBtn);
-                        listEl.appendChild(li);
-                    });
-                }
-            });
-        }
-
-        // C. Memory Wall Logic
-        function addMemory() {
-            const url = prompt("Enter Image URL (e.g., from Imgur, Discord, etc.):");
-            if (url && url.trim() !== "") {
-                db.ref('rody_world/memory-wall').push(url.trim());
-            }
-        }
-
-        function listenToMemoryWall() {
-            db.ref('rody_world/memory-wall').on('value', (snapshot) => {
-                const gridEl = document.getElementById("memory-wall-grid");
-                if (!gridEl) return;
-                gridEl.innerHTML = "";
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach((childKey) => {
-                        const imgUrl = data[childKey];
-                        
-                        const div = document.createElement("div");
-                        div.className = "memory-item";
-                        
-                        const img = document.createElement("img");
-                        img.src = imgUrl;
-                        img.alt = "Memory";
-                        
-                        const delBtn = document.createElement("button");
-                        delBtn.className = "del-btn";
-                        delBtn.textContent = "✕";
-                        delBtn.onclick = () => deleteItem('memory-wall', childKey);
-                        
-                        div.appendChild(img);
-                        div.appendChild(delBtn);
-                        gridEl.appendChild(div);
-                    });
-                }
-            });
-        }
-
-        // Initialize Everything
-        function initRealtimeSync() {
-            textKeys.forEach(key => listenToTextKey(key));
-            planKeys.forEach(key => listenToPlanKey(key));
-            listenToMemoryWall();
-        }
-
-        function showSecret() {
-            alert("🔒 Secret Message: You are officially the coolest person in this universe.");
-        }
-
-        window.onload = typeWriter;
-    </script>
+/* ---- memory wall: photos (compressed) + videos (Firebase Storage) ---- */
+function compress(f){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>{const s=Math.min(1,1000/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(i.src);res(c.toDataURL('image/jpeg',.75))};i.onerror=rej;i.src=URL.createObjectURL(f)})}
+async function upload(files){
+  for(const f of files){
+    try{
+      if(f.type.startsWith('image/')){ $('up').textContent='Adding photo…'; db.ref('rody_world/memory-wall').push({t:'img',u:await compress(f)}); }
+      else if(f.type.startsWith('video/')){ $('up').textContent='Uploading '+f.name+'…';
+        const r=firebase.storage().ref('memories/'+Date.now()+'_'+f.name.replace(/\W/g,'_')); await r.put(f);
+        db.ref('rody_world/memory-wall').push({t:'vid',u:await r.getDownloadURL()}); }
+    }catch(e){alert('Upload failed: '+e.message)}
+  }
+  $('up').textContent='';
+}
+function listenMem(){
+  db.ref('rody_world/memory-wall').on('value',snap=>{
+    const g=$('mem'); g.innerHTML=''; const data=snap.val()||{};
+    Object.keys(data).forEach(k=>{
+      const v=data[k], u=typeof v==='string'?v:v.u, vid=typeof v!=='string'&&v.t==='vid';
+      const d=el('div','mi'), m=document.createElement(vid?'video':'img'); m.src=u; if(vid){m.muted=true;m.preload='metadata'}
+      d.onclick=()=>{const lb=$('lb'),x=document.createElement(vid?'video':'img');x.src=u;if(vid){x.controls=true;x.autoplay=true}x.onclick=e=>e.stopPropagation();lb.innerHTML='';lb.appendChild(x);lb.classList.remove('hidden')};
+      const x=el('button','del','✕');x.onclick=e=>{e.stopPropagation();if(confirm('Remove this memory?'))db.ref('rody_world/memory-wall').child(k).remove()};
+      d.appendChild(m);d.appendChild(x);g.appendChild(d);
+    });
+  });
+}
+function initSync(){
+  ['favourite-music','moments','activities','memes','notes'].forEach(k=>listen(k,0));
+  ['her-plans','my-plans','our-plans','movies'].forEach(k=>listen(k,1));
+  listenMem();
+}
+</script>
 </body>
 </html>
