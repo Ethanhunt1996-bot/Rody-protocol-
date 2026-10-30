@@ -280,10 +280,12 @@ async function upload(files){
   for(const f of files){
     try{
       if(f.type.startsWith('image/')){ $('up').textContent='Adding photo…'; db.ref('rody_world/memory-wall').push({t:'img',u:await compress(f)}); }
-      else if(f.type.startsWith('video/')){ $('up').textContent='Uploading '+f.name+'…';
-        const r=firebase.storage().ref('memories/'+Date.now()+'_'+f.name.replace(/\W/g,'_')); await r.put(f);
+      else if(f.type.startsWith('video/')){
+        const st=firebase.storage(); st.setMaxUploadRetryTime(20000); st.setMaxOperationRetryTime(20000);
+        const r=st.ref('memories/'+Date.now()+'_'+f.name.replace(/\W/g,'_'));
+        await new Promise((ok,no)=>{const t=r.put(f,{contentType:f.type});t.on('state_changed',x=>{$('up').textContent='Uploading '+f.name+' '+Math.round(x.bytesTransferred/x.totalBytes*100)+'%'},no,ok)});
         db.ref('rody_world/memory-wall').push({t:'vid',u:await r.getDownloadURL()}); }
-    }catch(e){alert('Upload failed: '+e.message)}
+    }catch(e){alert('Upload failed: '+(e.code||'')+' '+e.message)}
   }
   $('up').textContent='';
 }
