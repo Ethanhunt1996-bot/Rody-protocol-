@@ -281,10 +281,18 @@ async function upload(files){
     try{
       if(f.type.startsWith('image/')){ $('up').textContent='Adding photo…'; db.ref('rody_world/memory-wall').push({t:'img',u:await compress(f)}); }
       else if(f.type.startsWith('video/')){
-        const st=firebase.storage(); st.setMaxUploadRetryTime(20000); st.setMaxOperationRetryTime(20000);
-        const r=st.ref('memories/'+Date.now()+'_'+f.name.replace(/\W/g,'_'));
-        await new Promise((ok,no)=>{const t=r.put(f,{contentType:f.type});t.on('state_changed',x=>{$('up').textContent='Uploading '+f.name+' '+Math.round(x.bytesTransferred/x.totalBytes*100)+'%'},no,ok)});
-        db.ref('rody_world/memory-wall').push({t:'vid',u:await r.getDownloadURL()}); }
+        try{
+          const st=firebase.storage(); st.setMaxUploadRetryTime(8000); st.setMaxOperationRetryTime(8000);
+          const r=st.ref('memories/'+Date.now()+'_'+f.name.replace(/\W/g,'_'));
+          await new Promise((ok,no)=>{const t=r.put(f,{contentType:f.type});t.on('state_changed',x=>{$('up').textContent='Uploading '+f.name+' '+Math.round(x.bytesTransferred/x.totalBytes*100)+'%'},no,ok)});
+          db.ref('rody_world/memory-wall').push({t:'vid',u:await r.getDownloadURL()});
+        }catch(se){
+          if(f.size>6e6) throw se;   // Storage unavailable: small videos (<6 MB) are saved in the database instead
+          $('up').textContent='Storage unavailable ('+(se.code||'error')+'), saving video directly…';
+          const u=await new Promise((ok,no)=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.onerror=no;fr.readAsDataURL(f)});
+          db.ref('rody_world/memory-wall').push({t:'vid',u});
+        }
+      }
     }catch(e){alert('Upload failed: '+(e.code||'')+' '+e.message)}
   }
   $('up').textContent='';
